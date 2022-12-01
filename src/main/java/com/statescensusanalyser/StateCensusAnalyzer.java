@@ -9,6 +9,7 @@ import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Iterator;
+import java.util.stream.StreamSupport;
 
 public class StateCensusAnalyzer {
 
@@ -49,5 +50,31 @@ public class StateCensusAnalyzer {
             exception.printStackTrace();
         }
         return 0;
+    }
+
+    public int readStateCodeCSVData(String FilePath) throws StateAnalyzerException {
+
+        try {
+            Files.newBufferedReader(Paths.get(FilePath));
+            Reader reader=Files.newBufferedReader(Paths.get(FilePath));
+            CsvToBean<CSVStates> csvToBean =
+                    new CsvToBeanBuilder<CSVStates>(reader)
+                            .withIgnoreLeadingWhiteSpace(true)
+                            .withSkipLines(1)
+                            .withType(CSVStates.class).build();
+
+            Iterator<CSVStates> csvIterator = csvToBean.iterator();
+
+            Iterable<CSVStates> csvItrable= () -> csvIterator;
+            int count=(int) StreamSupport.stream(csvItrable.spliterator(),false)
+                    .count();
+            return count;
+        }catch(IOException exception) {
+            throw new StateAnalyzerException("Invalid Path Name",
+                    ExceptionType.INVALID_FILE_PATH);
+        }catch(IllegalStateException exception){
+            throw new StateAnalyzerException("Invalid Class Type.",
+                    ExceptionType.INVALID_CLASS_TYPE);
+        }
     }
 }

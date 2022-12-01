@@ -3,7 +3,8 @@ package com.statescensusanalyser;
 public class StateAnalyzerException extends Exception {
 
     public enum ExceptionType{
-        INVALID_FILE_PATH, INVALID_CLASS_TYPE}
+        INVALID_FILE_PATH, INVALID_CLASS_TYPE
+    }
 
     public ExceptionType type;
 
